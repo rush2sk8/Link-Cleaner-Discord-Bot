@@ -60,6 +60,9 @@ async def on_message(message):
             cleaned = clean_url(url)
             m = m.replace(url, cleaned)
 
+        if message.content == m:
+            return
+
         embed=discord.Embed(title="Trackers Cleaned", description=m)
         embed.set_author(name=f'@{message.author.name}')
         await message.channel.send(embed=embed)
