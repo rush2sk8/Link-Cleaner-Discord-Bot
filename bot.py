@@ -1,12 +1,10 @@
-import json
 import os
-import urllib.parse
 from pathlib import Path
-import re
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 from urlextract import URLExtract
+import unalix
 
 load_dotenv(dotenv_path=Path('.')/'.env')
 
@@ -14,31 +12,9 @@ DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix='')
 
-with open("./rules.json", 'r') as rules_file:
-    rules = json.loads(rules_file.read())
 
 def clean_url(url):
-    print(f'Before: {url}')
-    providers = rules["providers"]
-    cleaned = url
-
-    for _, provider in providers.items():
-        url_pattern = provider["urlPattern"]
-
-        match = re.match(url_pattern, url)
-
-        # if the url matches the glob rule
-        if bool(match):
-
-            # regex rule
-            for rule in provider["rules"]:
-                # remove things that match the rule
-                cleaned = re.sub(rule, '', cleaned)
-
-    # remove remaining stuff
-    cleaned = re.sub("\?.*","", cleaned)
-    cleaned = re.sub('#.*',"", cleaned)
-    return cleaned
+    return unalix.clear_url(url)
 
 @bot.event
 async def on_ready():
@@ -65,6 +41,9 @@ async def on_message(message):
 
         embed=discord.Embed(title="Trackers Cleaned", description=m)
         embed.set_author(name=f'@{message.author.name}')
+
+        print(f'before: {message.content}')
+        print(f'after: {cleaned}')
         await message.channel.send(embed=embed)
         await message.delete()
 
