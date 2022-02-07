@@ -45,6 +45,5 @@ async def on_message(message):
         print(f'before: {message.content}')
         print(f'after: {cleaned}')
         await message.channel.send(embed=embed)
-        await message.delete()
 
 bot.run(DISCORD_TOKEN)
